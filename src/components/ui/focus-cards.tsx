@@ -1,16 +1,22 @@
-"use client";
+"use client"
 import Image from "next/image";
 import React, { useState } from "react";
 import { cn } from "@/lib/utils";
 
-export const Card = React.memo(
+type Card = {
+  title: string;
+  src: string;
+  description: string;
+};
+
+const Card = React.memo(
   ({
     card,
     index,
     hovered,
     setHovered,
   }: {
-    card: any;
+    card: Card;
     index: number;
     hovered: number | null;
     setHovered: React.Dispatch<React.SetStateAction<number | null>>;
@@ -29,14 +35,17 @@ export const Card = React.memo(
         fill
         className="object-cover absolute inset-0"
       />
-      <div
-        className={cn(
-          "absolute inset-0 bg-black/50 flex items-end py-8 px-4 transition-opacity duration-300",
-          hovered === index ? "opacity-100" : "opacity-0"
-        )}
-      >
-        <div className="text-xl md:text-2xl font-medium bg-clip-text text-transparent bg-gradient-to-b from-neutral-50 to-neutral-200">
+      <div className="absolute inset-0 bg-black/30 flex flex-col justify-between p-4">
+        <div className="text-xl md:text-2xl font-medium text-white">
           {card.title}
+        </div>
+        <div
+          className={cn(
+            "text-sm md:text-base text-white transition-opacity duration-300",
+            hovered === index ? "opacity-100" : "opacity-0"
+          )}
+        >
+          {card.description}
         </div>
       </div>
     </div>
@@ -45,14 +54,9 @@ export const Card = React.memo(
 
 Card.displayName = "Card";
 
-type Card = {
-  title: string;
-  src: string;
-};
-
 export function FocusCards({ cards }: { cards: Card[] }) {
   const [hovered, setHovered] = useState<number | null>(null);
-
+  
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-10 max-w-5xl mx-auto md:px-8 w-full">
       {cards.map((card, index) => (
