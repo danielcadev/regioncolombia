@@ -52,7 +52,7 @@ export default function SubRegionComponent({ subRegion, region }: SubRegionCompo
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-softblack-500 to-transparent flex items-end justify-start p-8">
             <div className="text-white">
-              <h2 className="text-3xl font-semibold mb-2">Proyectos Comunitarios</h2>
+              <h2 className="text-3xl font-semibold mb-2">Proyectos Turísticos Comunitarios</h2>
               <p className="text-xl opacity-80">{subRegion.communityProjects}</p>
             </div>
           </div>
