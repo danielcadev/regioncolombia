@@ -85,21 +85,6 @@ export const choco: SubRegion = {
       ],
     },
     {
-      name: "Región Pacífico Norte",
-      imageUrl: "/pacifico-norte.jpg",
-      surface: "4.900 km²",
-      population: "85.000 habitantes",
-      density: "17,35 hab/km²",
-      capital: "Acandí",
-      location: "Costa Pacífica norte del departamento del Chocó, limitando con Panamá",
-      description: "La Región Pacífico Norte, hacia 2024, se ha transformado en un área de gran importancia ecológica y cultural. Caracterizada por su ubicación estratégica entre Colombia y Panamá, sus extensas playas, manglares y selvas tropicales, la región ha logrado un equilibrio entre la conservación de su biodiversidad única y el desarrollo sostenible de sus comunidades. Se destaca por su ecoturismo responsable, la protección de especies marinas, la agricultura sostenible y la preservación de las culturas indígenas y afrocolombianas. La implementación de proyectos de energía renovable y la mejora en la conectividad sostenible han impulsado la calidad de vida de sus habitantes.",
-      municipios: [
-        { name: "Acandí", link: "/regiones/choco/pacifico-norte/acandi" },
-        { name: "Unguía", link: "/regiones/choco/pacifico-norte/unguia" },
-        { name: "Riosucio", link: "/regiones/choco/pacifico-norte/riosucio" }
-      ],
-    },
-    {
       name: "Región Darién",
       imageUrl: "/darien.jpg",
       surface: "7.500 km²",
