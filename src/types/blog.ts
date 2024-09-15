@@ -40,16 +40,5 @@ export interface ImageData {
     subRegionName: string;
     zonaName: string;
   }
+
   
-  // Si necesitas un tipo para la respuesta de la API de Strapi
-  export interface StrapiResponse<T> {
-    data: T[];
-    meta: {
-      pagination: {
-        page: number;
-        pageSize: number;
-        pageCount: number;
-        total: number;
-      };
-    };
-  }

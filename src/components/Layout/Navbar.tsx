@@ -123,6 +123,20 @@ const Navbar = () => {
               </div>
             ))}
           </div>
+          <div className="flex items-center ml-4 space-x-2">
+              <Link
+                href="/admin"
+                className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 transition-colors duration-200"
+              >
+                Admin Login
+              </Link>
+              <Link
+                href="/autor/login"
+                className="px-4 py-2 text-sm font-medium text-green-600 border border-green-600 rounded-md hover:bg-green-50 transition-colors duration-200"
+              >
+                Autor Login
+              </Link>
+            </div>
         </div>
       </div>
     </nav>

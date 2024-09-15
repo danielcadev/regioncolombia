@@ -12,13 +12,13 @@ type ProyectoComunitarioPreviewProps = {
   zonaName: string;
 };
 
-export function ProyectoComunitarioPreview({ 
-  id, 
-  title, 
-  slug, 
-  regionName, 
-  subRegionName, 
-  zonaName 
+export function ProyectoComunitarioPreview({
+  id,
+  title,
+  slug,
+  regionName,
+  subRegionName,
+  zonaName
 }: ProyectoComunitarioPreviewProps) {
   return (
     <Link href={`/Regiones/${regionName}/${subRegionName}/${zonaName}/Proyecto-Comunitario/${slug}`} className="block w-full">
