@@ -18,7 +18,6 @@ declare module "next-auth" {
       role?: string | null;
     } & DefaultSession["user"]
   }
-
   interface User {
     role?: string | null;
   }
@@ -59,64 +58,65 @@ export const {
         password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password || 
-            typeof credentials.email !== 'string' || 
-            typeof credentials.password !== 'string') {
+        try {
+          if (!credentials || typeof credentials.email !== 'string' || typeof credentials.password !== 'string') {
+            throw new Error("Invalid credentials")
+          }
+    
+          const user = await prisma.user.findUnique({
+            where: { email: credentials.email }
+          })
+    
+          if (!user || !user.password) {
+            throw new Error("User not found")
+          }
+    
+          const isPasswordValid = await bcryptjs.compare(credentials.password, user.password)
+    
+          if (!isPasswordValid) {
+            throw new Error("Invalid password")
+          }
+    
+          console.log("Authorize - User found:", user)
+          return {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+          }
+        } catch (error) {
+          console.error("Authorization error:", error)
           return null
-        }
-        
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email }
-        })
-        
-        if (!user || !user.password) {
-          return null
-        }
-        
-        const isPasswordValid = await bcryptjs.compare(credentials.password, user.password)
-        
-        if (!isPasswordValid) {
-          return null
-        }
-        
-        console.log("Authorize - User found:", user)
-        return {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          role: user.role,
         }
       },
     }),
   ],
   callbacks: {
-    async jwt({ token, user }: { token: JWT, user?: User }) {
+    async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
         token.role = user.role;
       }
       return token;
     },
-    async session({ session, token, user }: { session: any, token: JWT, user: User }) {
+    async session({ session, token }) {
       console.log("Session Callback - Token:", token);
-      console.log("Session Callback - User:", user);
       console.log("Session Callback - Session before:", session);
-
       if (session.user) {
-        session.user.id = token?.id ?? user?.id ?? 'unknown';
-        session.user.role = token?.role ?? user?.role ?? null;
+        session.user.id = token.id as string;
+        session.user.role = token.role as string;
       }
-
       console.log("Session Callback - Session after:", session);
       return session;
     },
   },
   session: {
-    strategy: "database"
+    strategy: "jwt"  // Cambiado de "database" a "jwt"
   },
   pages: {
     signIn: "/admin/signin",
   },
+  debug: process.env.NODE_ENV === 'development',
 })
 
 export async function hashPassword(password: string): Promise<string> {

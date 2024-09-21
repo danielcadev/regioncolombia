@@ -1,4 +1,5 @@
 "use client"
+
 import { useState } from "react"
 import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
@@ -7,12 +8,18 @@ import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Mail, Lock, User } from "lucide-react"
 
-export function SignInForm() {
-  const [error, setError] = useState("")
+interface SignInFormProps {
+  onError: (error: string) => void;
+}
+
+export function SignInForm({ onError }: SignInFormProps) {
+  const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
+    setIsLoading(true)
+
     const formData = new FormData(event.currentTarget)
     const email = formData.get("email") as string
     const password = formData.get("password") as string
@@ -23,19 +30,23 @@ export function SignInForm() {
         email,
         password,
       })
+
       if (result?.error) {
-        setError(result.error)
+        onError(result.error)
       } else if (result?.ok) {
+        console.log("Sign-in successful, redirecting...")
         router.push("/admin/dashboard")
       }
     } catch (error) {
-      setError("An unexpected error occurred")
+      console.error("Sign-in error:", error)
+      onError("An unexpected error occurred. Please try again.")
+    } finally {
+      setIsLoading(false)
     }
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      {error && <p className="text-red-500">{error}</p>}
       <div className="space-y-2">
         <Label htmlFor="email">Email</Label>
         <div className="relative">
@@ -50,8 +61,14 @@ export function SignInForm() {
           <Input name="password" id="password" type="password" className="pl-8" required />
         </div>
       </div>
-      <Button type="submit" className="w-full">
-        <User className="mr-2 h-4 w-4" /> Sign In with Email
+      <Button type="submit" className="w-full" disabled={isLoading}>
+        {isLoading ? (
+          "Signing In..."
+        ) : (
+          <>
+            <User className="mr-2 h-4 w-4" /> Sign In with Email
+          </>
+        )}
       </Button>
     </form>
   )

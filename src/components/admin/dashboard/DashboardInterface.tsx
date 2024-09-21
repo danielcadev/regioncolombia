@@ -30,7 +30,17 @@ const DashboardCard = ({ title, icon: Icon, link }: { title: string; icon: React
 
 export default async function DashboardPage() {
   const session = await auth();
-  const isAdmin = session?.user?.role === 'ADMIN';
+  
+  if (!session) {
+    return (
+      <div className="p-8">
+        <h1 className="text-3xl font-bold">Access Denied</h1>
+        <p>You must be signed in to view this page.</p>
+      </div>
+    );
+  }
+
+  const isAdmin = session.user?.role === 'ADMIN';
 
   return (
     <div className="p-8 space-y-8">
@@ -49,14 +59,14 @@ export default async function DashboardPage() {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      
+     
       <div className="grid gap-6 md:grid-cols-3">
         {isAdmin && <DashboardCard title="Users" icon={Users} link="/admin/dashboard/users" />}
         <DashboardCard title="Content" icon={FileText} link="/admin/dashboard/content" />
         {isAdmin && <DashboardCard title="Media" icon={ImageIcon} link="/admin/dashboard/media" />}
         <DashboardCard title="Settings" icon={Settings} link="/admin/dashboard/settings" />
       </div>
-      
+     
       {isAdmin && (
         <Card className="mt-8">
           <CardHeader>

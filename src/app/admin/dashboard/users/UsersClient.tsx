@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import { User } from '@prisma/client'
-import { getUsers, createUser, updateUser, deleteUser } from '@/lib/users'
+import { getUsers, createUser, updateUser, deleteUser, changeUserRole } from '@/lib/users'
 import { UserList } from '@/components/admin/users/UserList'
 import { UserForm } from '@/components/admin/users/UserForm'
 import { Button } from "@/components/ui/button"
@@ -26,6 +26,7 @@ export default function UsersClient({ initialSession }: UsersClientProps) {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
+    console.log("Current session:", session)
     if (session?.user?.role === "ADMIN") {
       fetchUsers()
     }
@@ -35,6 +36,7 @@ export default function UsersClient({ initialSession }: UsersClientProps) {
     try {
       setIsLoading(true)
       const fetchedUsers = await getUsers()
+      console.log("Fetched users:", fetchedUsers)
       setUsers(fetchedUsers.map(user => ({
         ...user,
         role: user.role as "USER" | "ADMIN"
@@ -46,7 +48,6 @@ export default function UsersClient({ initialSession }: UsersClientProps) {
       setIsLoading(false)
     }
   }
-
 
   const handleAddUser = () => {
     setIsAddingUser(true)
@@ -82,6 +83,7 @@ export default function UsersClient({ initialSession }: UsersClientProps) {
       setIsAddingUser(false)
       setEditingUser(null)
       setError(null)
+      fetchUsers()
     } catch (error: any) {
       setError(`Failed to submit user. Error: ${error.message}`)
     }
@@ -92,11 +94,20 @@ export default function UsersClient({ initialSession }: UsersClientProps) {
     setEditingUser(null)
   }
 
+  const handleRoleChange = async (userId: string, newRole: "USER" | "ADMIN") => {
+    try {
+      const updatedUser = await changeUserRole(userId, newRole)
+      setUsers(users.map(user => user.id === userId ? { ...user, role: newRole } : user))
+      console.log("User role updated:", updatedUser)
+    } catch (error: any) {
+      setError(`Failed to update user role. Error: ${error.message}`)
+    }
+  }
+
   if (status === "loading") {
     return <div className="text-center py-10">Loading...</div>
   }
 
-  // Cambiamos esta condición para usar solo el session
   if (!session || session.user.role !== "ADMIN") {
     return (
       <Alert variant="destructive">
@@ -109,6 +120,7 @@ export default function UsersClient({ initialSession }: UsersClientProps) {
     return <div className="text-center py-10">Loading users...</div>
   }
 
+  console.log("Rendering UserList with users:", users)
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto py-8">
@@ -134,6 +146,7 @@ export default function UsersClient({ initialSession }: UsersClientProps) {
             onEdit={handleEditUser}
             onDelete={handleDeleteUser}
             onAdd={handleAddUser}
+            onRoleChange={handleRoleChange}
           />
         </>
       )}
