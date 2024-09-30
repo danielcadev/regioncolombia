@@ -1,33 +1,41 @@
-import React from 'react';
 import Link from 'next/link';
-import { Card, CardContent } from "@/components/ui/card";
+import Image from 'next/image';
 import { ArrowRight } from 'lucide-react';
+import { ProyectoComunitarioPreview as ProyectoComunitarioPreviewType } from '@/types/blog';
 
-type ProyectoComunitarioPreviewProps = {
-  id: number;
-  title: string;
-  slug: string;
-  regionName: string;
-  subRegionName: string;
-  zonaName: string;
-};
+export function ProyectoComunitarioPreview({
+  title,
+  mainImage,
+  slug,
+  zona,
+  regionName,
+  subRegionName,
+}: ProyectoComunitarioPreviewType) {
+  const projectUrl = `/Regiones/${regionName}/${subRegionName}/${zona}/Proyecto-Comunitario/${slug}`;
 
-export function ProyectoComunitarioPreview({ 
-  id, 
-  title, 
-  slug, 
-  regionName, 
-  subRegionName, 
-  zonaName 
-}: ProyectoComunitarioPreviewProps) {
   return (
-    <Link href={`/Regiones/${regionName}/${subRegionName}/${zonaName}/Proyecto-Comunitario/${slug}`} className="block w-full">
-      <Card className="hover:shadow-lg transition-shadow duration-300">
-        <CardContent className="flex items-center justify-between p-4">
-          <h3 className="text-lg font-semibold text-softblack-500">{title}</h3>
+    <Link href={projectUrl} className="block w-full h-full">
+      <div className="p-4 flex flex-col justify-between h-full bg-white rounded-xl shadow-lg overflow-hidden">
+        <div>
+          {mainImage && (
+            <div className="mb-4 relative h-48">
+              <Image
+                src={mainImage}
+                alt={title}
+                layout="fill"
+                objectFit="cover"
+                className="rounded-lg"
+              />
+            </div>
+          )}
+          <h3 className="text-xl font-semibold text-softblack-500 mb-2">{title}</h3>
+          <p className="text-sm text-gray-600 mb-1">Zona: {zona}</p>
+        </div>
+        <div className="flex justify-end items-center mt-4">
+          <span className="text-sm font-medium mr-2 text-green-500">Ver más</span>
           <ArrowRight className="text-green-500" size={20} />
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </Link>
   );
 }

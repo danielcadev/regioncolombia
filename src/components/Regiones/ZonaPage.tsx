@@ -11,9 +11,9 @@ import {
   ModalFooter,
   ModalTrigger,
 } from "@/components/ui/animated-modal";
-import { createUrl, cn } from "@/lib/utils";
+import { createUrl, cn, normalizeZoneName } from "@/lib/utils";
 import { Zona, Region, SubRegion } from "@/types/regions";
-import { ProyectoComunitario } from "@/types/blog";
+import { ProyectoZona } from "@/types/blog";
 import {
   MapPin,
   Users,
@@ -21,10 +21,7 @@ import {
   ArrowRight,
   Map,
 } from "lucide-react";
-import { fetchProyectosComunitarios } from "@/lib/strapi";
 import { ProyectoComunitarioPreview } from '@/components/Regiones/ProyectoComunitarioPreview';
-import { normalizeZoneName } from '@/lib/utils';
-
 
 interface ZonaPageProps {
   zona: Zona;
@@ -33,22 +30,35 @@ interface ZonaPageProps {
 }
 
 export default function ZonaPage({ zona, region, subRegion }: ZonaPageProps) {
-  const [proyectos, setProyectos] = useState<ProyectoComunitario[]>([]);
+  const [proyectos, setProyectos] = useState<ProyectoZona[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadProyectos() {
       try {
-        const normalizedZonaName = normalizeZoneName(zona.name);
-        console.log('Buscando proyectos para la zona normalizada:', normalizedZonaName);
-        const data = await fetchProyectosComunitarios(normalizedZonaName);
-        console.log('Proyectos obtenidos:', data);
+        setLoading(true);
+        // Use the formatted zona name for fetching projects
+        const response = await fetch(`/api/projects/create?zona=${normalizeZoneName(zona.name)}`);
+
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch projects');
+        }
+
+        const data = await response.json();
         setProyectos(data);
+        setError(null);
       } catch (error) {
         console.error('Error fetching proyectos comunitarios:', error);
+        setError('Unable to load projects. Please try again later.');
+      } finally {
+        setLoading(false);
       }
     }
+
     loadProyectos();
-  }, [zona.name]);
+  }, [zona.name]);  // Changed dependency to zona.name
   
   return (
     <div className="bg-white min-h-screen">
@@ -211,32 +221,41 @@ export default function ZonaPage({ zona, region, subRegion }: ZonaPageProps) {
         </motion.div>
 
         <motion.div
-        initial={{ opacity: 0, y: 50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.7 }}
-      >
-        <h3 className="text-3xl font-semibold mb-6 text-softblack-500 text-center">
-          Proyectos Comunitarios
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.7 }}
+        >
+           <h3 className="text-3xl font-semibold mb-6 text-softblack-500 text-center">
+          Proyectos Comunitarios en {zona.name}
         </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {proyectos.map((proyecto) => (
-            <motion.div
-              key={proyecto.id}
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <ProyectoComunitarioPreview
-                id={proyecto.id}
-                title={proyecto.attributes.Title}
-                slug={proyecto.attributes.Slug}
-                regionName={region.name}
-                subRegionName={subRegion.name}
-                zonaName={zona.name}
-              />
-            </motion.div>
-          ))}
-        </div>
-      </motion.div>
+        {loading ? (
+          <p className="text-center text-gray-500 mt-4">Cargando proyectos...</p>
+        ) : error ? (
+          <p className="text-center text-red-500 mt-4">{error}</p>
+        ) : proyectos.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {proyectos.map((proyecto) => (
+              <motion.div
+                key={proyecto.id}
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.98 }}
+                className="bg-white rounded-xl shadow-lg overflow-hidden"
+              >
+                <ProyectoComunitarioPreview
+                  {...proyecto}
+                  regionName={region.name}
+                  subRegionName={subRegion.name}
+                  zona={zona.name}
+                />
+              </motion.div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-center text-gray-500 mt-4">
+            No hay proyectos comunitarios disponibles en esta zona.
+          </p>
+        )}
+        </motion.div>
       </div>
     </div>
   );

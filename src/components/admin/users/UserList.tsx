@@ -12,21 +12,10 @@ import {
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Pencil, Trash2, UserPlus, Check, X } from 'lucide-react'
-import { User } from '@prisma/client'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { UserListProps } from '@/types/userList'
 
-type ExtendedUser = User & {
-  role: 'USER' | 'ADMIN'
-}
-
-interface UserListProps {
-  users: ExtendedUser[]
-  onEdit: (user: ExtendedUser) => void
-  onDelete: (user: ExtendedUser) => Promise<void>
-  onAdd: () => void
-  onRoleChange: (userId: string, newRole: "USER" | "ADMIN") => Promise<void>
-}
 
 export function UserList({ users, onEdit, onDelete, onAdd, onRoleChange }: UserListProps) {
   const [searchTerm, setSearchTerm] = useState('')

@@ -47,7 +47,7 @@ export const {
           name: profile.name || profile.login,
           email: profile.email,
           image: profile.avatar_url,
-          role: "ADMIN", // Asigna un rol por defecto para usuarios de GitHub
+          role: "User", // Asigna un rol por defecto para usuarios de GitHub
         }
       },
     }),

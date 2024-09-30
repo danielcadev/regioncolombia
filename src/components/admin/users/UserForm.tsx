@@ -1,7 +1,6 @@
 "use client"
 
 import React from 'react'
-import { User } from '@prisma/client'
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
@@ -25,7 +24,7 @@ import {
 } from "@/components/ui/select"
 import { useToast } from "@/hooks/use-toast"
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card"
-import { UserCreateInput, UserUpdateInput } from '@/types'
+import { ExtendedUser, UserCreateInput, UserUpdateInput } from '@/types'
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -36,7 +35,7 @@ const formSchema = z.object({
   }),
   password: z.string().min(6, {
     message: "Password must be at least 6 characters.",
-  }),
+  }).optional().or(z.literal('')),
   role: z.enum(["USER", "ADMIN"], {
     required_error: "Please select a role.",
   }),
@@ -45,9 +44,9 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>
 
 interface UserFormProps {
-  user?: User & { role?: 'USER' | 'ADMIN' }
-  onSubmit: (userData: UserCreateInput | UserUpdateInput) => Promise<void>
-  onCancel: () => void
+  user?: ExtendedUser;
+  onSubmit: (userData: UserCreateInput | UserUpdateInput) => Promise<void>;
+  onCancel: () => void;
 }
 
 export function UserForm({ user, onSubmit, onCancel }: UserFormProps) {
@@ -65,15 +64,19 @@ export function UserForm({ user, onSubmit, onCancel }: UserFormProps) {
 
   async function handleSubmit(data: FormValues) {
     try {
-      const submitData = user
+      const submitData: UserCreateInput | UserUpdateInput = user
         ? { 
-            id: user.id, 
             name: data.name, 
             email: data.email, 
             role: data.role,
             ...(data.password ? { password: data.password } : {})
-          } as UserUpdateInput
-        : data as UserCreateInput
+          }
+        : {
+            name: data.name,
+            email: data.email,
+            password: data.password as string,
+            role: data.role,
+          }
       
       await onSubmit(submitData)
       toast({
@@ -89,7 +92,6 @@ export function UserForm({ user, onSubmit, onCancel }: UserFormProps) {
       })
     }
   }
-
 
   return (
     <Card className="w-full max-w-2xl mx-auto">

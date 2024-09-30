@@ -1,55 +1,65 @@
 // types/blog.ts
 
-export interface ImageData {
-    data: {
-      attributes: {
-        url: string;
-      };
-    };
-  }
-  
-  export interface ProyectoComunitario {
-    id: number;
-    attributes: {
-      Title: string;
-      MainImage: ImageData;
-      Description: string;
-      ContentSection1: string;
-      Image1: ImageData;
-      ContentSection2: string;
-      Image2: ImageData;
-      ContentSection3: string;
-      Slug: string;
-      Author: {
-        data: {
-          attributes: {
-            username: string;
-          };
-        };
-      };
-      zona: string; 
-    };
-  }
-  
-  export interface ProyectoComunitarioPreviewProps {
-    id: number;
-    title: string;
-    imageUrl: string;
-    slug: string;
-    regionName: string;
-    subRegionName: string;
-    zonaName: string;
-  }
-  
-  // Si necesitas un tipo para la respuesta de la API de Strapi
-  export interface StrapiResponse<T> {
-    data: T[];
-    meta: {
-      pagination: {
-        page: number;
-        pageSize: number;
-        pageCount: number;
-        total: number;
-      };
-    };
-  }
+// Tipo base para un usuario
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+}
+
+// Tipo base para un proyecto
+export interface Proyecto {
+  id: string;
+  title: string;
+  slug: string;
+  zona: string;
+  createdAt: string | Date;
+  updatedAt: string | Date;
+}
+
+
+
+// Tipo completo para un proyecto comunitario
+export interface ProyectoComunitario extends Proyecto {
+  mainImage?: string;
+  content1: string;
+  image1?: string;
+  content2?: string;
+  image2?: string;
+  content3?: string;
+  author: User;
+  authorId: string;
+}
+
+
+export interface ProyectoZona {
+  id: string;
+  title: string;
+  slug: string;
+  mainImage?: string;
+  zona: string;
+}
+
+// Tipo para la vista previa de un proyecto comunitario
+export interface ProyectoComunitarioPreview {
+  title: string;
+  slug: string;
+  zona: string;
+  mainImage?: string;
+  regionName: string;
+  subRegionName: string;
+}
+
+// Tipo para los datos del formulario de creación/edición de proyecto
+export interface ProyectoComunitarioFormData {
+  title: string;
+  slug: string;
+  zona: string;
+  authorId: string;
+  mainImage?: File;
+  content1: string;
+  image1?: File;
+  content2?: string;
+  image2?: File;
+  content3?: string;
+}
