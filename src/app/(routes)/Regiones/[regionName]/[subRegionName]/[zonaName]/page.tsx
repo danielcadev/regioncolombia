@@ -20,7 +20,7 @@ export default function ZonaPage({ params }: PageParams) {
   if (!region || !subRegion || !zona) notFound();
 
   return (
-    <ZonaLayout zona={zona} region={region} subRegion={subRegion}>
+    <ZonaLayout zone={zona} region={region} subRegion={subRegion}>
       {/* Aquí puedes agregar contenido adicional específico de la página si lo necesitas */}
     </ZonaLayout>
   );

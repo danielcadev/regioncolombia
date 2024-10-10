@@ -2,16 +2,24 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight } from 'lucide-react';
 import { ProyectoComunitarioPreview as ProyectoComunitarioPreviewType } from '@/types/blog';
+import { normalizeZoneName } from "@/lib/utils";
 
 export function ProyectoComunitarioPreview({
   title,
   mainImage,
   slug,
-  zona,
+  zone,
   regionName,
   subRegionName,
 }: ProyectoComunitarioPreviewType) {
-  const projectUrl = `/Regiones/${regionName}/${subRegionName}/${zona}/Proyecto-Comunitario/${slug}`;
+  console.log('Original zone:', zone);
+  
+  // Normalizar la zona antes de usarla en la URL
+  const normalizedZona = normalizeZoneName(zone);
+  console.log('Normalized zone:', normalizedZona);
+  
+  const projectUrl = `/Regiones/${regionName}/${subRegionName}/${normalizedZona}/Proyecto-Comunitario/${slug}`;
+  console.log('Project URL:', projectUrl);
 
   return (
     <Link href={projectUrl} className="block w-full h-full">
@@ -29,7 +37,7 @@ export function ProyectoComunitarioPreview({
             </div>
           )}
           <h3 className="text-xl font-semibold text-softblack-500 mb-2">{title}</h3>
-          <p className="text-sm text-gray-600 mb-1">Zona: {zona}</p>
+          <p className="text-sm text-gray-600 mb-1">Zona: {normalizedZona}</p>
         </div>
         <div className="flex justify-end items-center mt-4">
           <span className="text-sm font-medium mr-2 text-green-500">Ver más</span>

@@ -13,17 +13,23 @@ const providerIcons = {
   // Añade aquí más iconos para otros proveedores si es necesario
 }
 
+const providerNames = {
+  github: "GitHub",
+  // Añade aquí más nombres en español para otros proveedores si es necesario
+}
+
 export default function SignInButton({ provider, callbackUrl = "/admin/dashboard" }: SignInButtonProps) {
   const Icon = providerIcons[provider as keyof typeof providerIcons] || Github
+  const providerName = providerNames[provider as keyof typeof providerNames] || provider
 
   return (
-    <Button 
-      variant="outline" 
-      className="w-full" 
+    <Button
+      variant="outline"
+      className="w-full"
       onClick={() => signIn(provider, { callbackUrl })}
     >
       <Icon className="mr-2 h-4 w-4" />
-      Sign in with {provider.charAt(0).toUpperCase() + provider.slice(1)}
+      Iniciar sesión con {providerName}
     </Button>
   )
 }

@@ -29,13 +29,17 @@ export const compareUrlParams = (param1: string, param2: string): boolean => {
 
 //Regiones 
 
-export function normalizeZoneName(name: string): string {
+export function normalizeZoneName(name: string | undefined | null): string {
+  if (!name) {
+    return 'Unknown-Zone';
+  }
+
   const lowercaseWords = ['de', 'del', 'la', 'el', 'los', 'las', 'y', 'e', 'o', 'u'];
-  
+ 
   return name
     .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "") 
-    .replace(/[^a-z0-9]+/gi, '-') 
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/gi, '-')
     .split('-')
     .map((word, index) => {
       if (index === 0 || !lowercaseWords.includes(word.toLowerCase())) {

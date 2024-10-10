@@ -13,23 +13,18 @@ export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
     const file = formData.get('file') as File | null;
-
     if (!file) {
       return NextResponse.json({ error: 'No file uploaded' }, { status: 400 });
     }
-
     const buffer = await file.arrayBuffer();
     const filename = `${Date.now()}-${file.name}`;
-
     const command = new PutObjectCommand({
       Bucket: process.env.AWS_BUCKET_NAME!,
       Key: filename,
       Body: Buffer.from(buffer),
       ContentType: file.type,
     });
-
     await s3Client.send(command);
-
     const fileUrl = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${filename}`;
     return NextResponse.json({ url: fileUrl });
   } catch (error) {
@@ -37,9 +32,3 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Failed to upload file' }, { status: 500 });
   }
 }
-
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};

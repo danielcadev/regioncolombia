@@ -109,6 +109,13 @@ export const {
       console.log("Session Callback - Session after:", session);
       return session;
     },
+
+    async redirect({ url, baseUrl }) {
+      // Evita redirecciones infinitas a la página de inicio de sesión
+      if (url.startsWith(baseUrl)) return url
+      // De lo contrario, redirige a la página de inicio
+      else return baseUrl
+    },
   },
   session: {
     strategy: "jwt"  // Cambiado de "database" a "jwt"

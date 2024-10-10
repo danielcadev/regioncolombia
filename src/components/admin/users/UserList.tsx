@@ -1,6 +1,7 @@
+// components/admin/users/UserList.tsx
 "use client"
 
-import React, { useState } from 'react'
+import React from 'react'
 import {
   Table,
   TableBody,
@@ -11,47 +12,39 @@ import {
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Pencil, Trash2, UserPlus, Check, X } from 'lucide-react'
+import { Pencil, Trash2, UserPlus } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { User } from '@/types/user'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { UserListProps } from '@/types/userList'
 
+interface UserListProps {
+  users: User[];
+  searchTerm: string;
+  onSearchChange: (term: string) => void;
+  onEdit: (user: User) => void;
+  onAdd: () => void;
+  onDelete: (userId: string) => void;
+  onRoleChange: (userId: string, newRole: "USER" | "ADMIN") => Promise<void>;
+  showInactiveUsers: boolean;
+}
 
-export function UserList({ users, onEdit, onDelete, onAdd, onRoleChange }: UserListProps) {
-  const [searchTerm, setSearchTerm] = useState('')
-  const [editingUserId, setEditingUserId] = useState<string | null>(null)
-  const [editingRole, setEditingRole] = useState<"USER" | "ADMIN" | null>(null)
-
-  const filteredUsers = users.filter(user =>
-    user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.email.toLowerCase().includes(searchTerm.toLowerCase())
-  )
-
-  const handleRoleChange = async (userId: string, newRole: "USER" | "ADMIN") => {
-    setEditingUserId(userId)
-    setEditingRole(newRole)
-  }
-
-  const confirmRoleChange = async (userId: string) => {
-    if (editingRole) {
-      await onRoleChange(userId, editingRole)
-      setEditingUserId(null)
-      setEditingRole(null)
-    }
-  }
-
-  const cancelRoleChange = () => {
-    setEditingUserId(null)
-    setEditingRole(null)
-  }
-
+export function UserList({ 
+  users, 
+  searchTerm,
+  onSearchChange,
+  onEdit, 
+  onAdd, 
+  onDelete,
+  onRoleChange,
+  showInactiveUsers 
+}: UserListProps) {
   return (
     <Card className="w-full">
       <CardHeader>
         <CardTitle className="flex justify-between items-center">
-          <span>User Management</span>
+          <span>Gestión de Usuarios</span>
           <Button onClick={onAdd} className="ml-4">
-            <UserPlus className="mr-2 h-4 w-4" /> Add New User
+            <UserPlus className="mr-2 h-4 w-4" /> Agregar Nuevo Usuario
           </Button>
         </CardTitle>
       </CardHeader>
@@ -59,60 +52,54 @@ export function UserList({ users, onEdit, onDelete, onAdd, onRoleChange }: UserL
         <div className="flex justify-between items-center mb-4">
           <Input
             className="max-w-sm"
-            placeholder="Search users..."
+            placeholder="Buscar usuarios..."
             type="search"
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => onSearchChange(e.target.value)}
           />
         </div>
         <div className="rounded-md border">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Role</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>Nombre</TableHead>
+                <TableHead>Correo</TableHead>
+                <TableHead>Rol</TableHead>
+                <TableHead>Estado</TableHead>
+                <TableHead className="text-right">Acciones</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredUsers.map((user) => (
+              {users.map((user) => (
                 <TableRow key={user.id}>
                   <TableCell className="font-medium">{user.name}</TableCell>
                   <TableCell>{user.email}</TableCell>
                   <TableCell>
-                    {editingUserId === user.id ? (
-                      <div className="flex items-center space-x-2">
-                        <Select
-                          value={editingRole || user.role}
-                          onValueChange={(newRole) => handleRoleChange(user.id, newRole as "USER" | "ADMIN")}
-                        >
-                          <SelectTrigger className="w-[100px]">
-                            <SelectValue placeholder="Select role" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="USER">User</SelectItem>
-                            <SelectItem value="ADMIN">Admin</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <Button variant="ghost" size="icon" onClick={() => confirmRoleChange(user.id)}>
-                          <Check className="h-4 w-4 text-green-500" />
-                        </Button>
-                        <Button variant="ghost" size="icon" onClick={cancelRoleChange}>
-                          <X className="h-4 w-4 text-red-500" />
-                        </Button>
-                      </div>
+                    <Select
+                      value={user.role}
+                      onValueChange={(newRole) => onRoleChange(user.id, newRole as "USER" | "ADMIN")}
+                    >
+                      <SelectTrigger className="w-[100px]">
+                        <SelectValue placeholder="Rol" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="USER">Usuario</SelectItem>
+                        <SelectItem value="ADMIN">Administrador</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </TableCell>
+                  <TableCell>
+                    {user.isActive ? (
+                      <span className="text-green-600">Activo</span>
                     ) : (
-                      <span className={user.role === 'ADMIN' ? 'text-blue-600 font-semibold' : ''}>
-                        {user.role}
-                      </span>
+                      <span className="text-red-600">Inactivo</span>
                     )}
                   </TableCell>
                   <TableCell className="text-right">
-                    <Button variant="ghost" size="icon" onClick={() => setEditingUserId(user.id)}>
+                    <Button variant="ghost" size="icon" onClick={() => onEdit(user)}>
                       <Pencil className="h-4 w-4" />
                     </Button>
-                    <Button variant="ghost" size="icon" onClick={() => onDelete(user)}>
+                    <Button variant="ghost" size="icon" onClick={() => onDelete(user.id)}>
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </TableCell>
@@ -121,8 +108,8 @@ export function UserList({ users, onEdit, onDelete, onAdd, onRoleChange }: UserL
             </TableBody>
           </Table>
         </div>
-        {filteredUsers.length === 0 && (
-          <div className="text-center py-4 text-muted-foreground">No users found</div>
+        {users.length === 0 && (
+          <div className="text-center py-4 text-muted-foreground">No se encontraron usuarios</div>
         )}
       </CardContent>
     </Card>

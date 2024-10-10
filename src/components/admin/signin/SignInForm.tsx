@@ -1,5 +1,4 @@
 "use client"
-
 import { useState } from "react"
 import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
@@ -19,7 +18,6 @@ export function SignInForm({ onError }: SignInFormProps) {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setIsLoading(true)
-
     const formData = new FormData(event.currentTarget)
     const email = formData.get("email") as string
     const password = formData.get("password") as string
@@ -30,43 +28,42 @@ export function SignInForm({ onError }: SignInFormProps) {
         email,
         password,
       })
-
       if (result?.error) {
         onError(result.error)
       } else if (result?.ok) {
-        console.log("Sign-in successful, redirecting...")
+        console.log("Inicio de sesión exitoso, redirigiendo...")
         router.push("/admin/dashboard")
       }
     } catch (error) {
-      console.error("Sign-in error:", error)
-      onError("An unexpected error occurred. Please try again.")
+      console.error("Error de inicio de sesión:", error)
+      onError("Ocurrió un error inesperado. Por favor, intenta de nuevo.")
     } finally {
       setIsLoading(false)
     }
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4 w-full max-w-sm">
       <div className="space-y-2">
-        <Label htmlFor="email">Email</Label>
+        <Label htmlFor="email">Correo electrónico</Label>
         <div className="relative">
           <Mail className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input name="email" id="email" type="email" className="pl-8" required />
+          <Input name="email" id="email" type="email" className="pl-8" required placeholder="tu@email.com" />
         </div>
       </div>
       <div className="space-y-2">
-        <Label htmlFor="password">Password</Label>
+        <Label htmlFor="password">Contraseña</Label>
         <div className="relative">
           <Lock className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input name="password" id="password" type="password" className="pl-8" required />
+          <Input name="password" id="password" type="password" className="pl-8" required placeholder="••••••••" />
         </div>
       </div>
       <Button type="submit" className="w-full" disabled={isLoading}>
         {isLoading ? (
-          "Signing In..."
+          "Iniciando sesión..."
         ) : (
           <>
-            <User className="mr-2 h-4 w-4" /> Sign In with Email
+            <User className="mr-2 h-4 w-4" /> Iniciar sesión con Email
           </>
         )}
       </Button>

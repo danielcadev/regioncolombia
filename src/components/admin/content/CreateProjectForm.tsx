@@ -1,57 +1,28 @@
-"use client";
+// components/admin/content/CreateProjectForm.tsx
 
-import { ProjectForm } from "@/components/admin/content/ProjectForm";
-import { useRouter } from "next/navigation";
-import { getRegionInfoByZona } from "@/lib/regionUtils";
-import { normalizeZoneName } from "@/lib/utils";
+"use client"
 
-export function CreateProjectForm() {
-  const router = useRouter();
+import { ProjectForm } from '@/components/admin/content/ProjectForm';
+import { useCreateProject } from '@/hooks/useCreateProject';
+import { User } from '@/types/user';
+import { ProyectoComunitario } from '@/types/blog';
 
-  const handleCreateProject = async (formData: FormData) => {
-    const cleanedFormData = new FormData();
-    for (const [key, value] of formData.entries()) {
-      if (value instanceof File && value.size > 0) {
-        cleanedFormData.append(key, value);
-      } else if (typeof value === 'string' && value.trim() !== '') {
-        if (key === 'zone') {
-          cleanedFormData.append(key, normalizeZoneName(value));
-        } else {
-          cleanedFormData.append(key, value);
-        }
-      }
-    }
+interface CreateProjectFormProps {
+  user: Partial<User>;
+}
 
-    try {
-      const response = await fetch('/api/projects/create', {
-        method: 'POST',
-        body: cleanedFormData,
-      });
+export default function CreateProjectForm({ user }: CreateProjectFormProps) {
+  const { error, handleCreateProject, extendedUser } = useCreateProject(user as User);
 
-      if (response.ok) {
-        const project = await response.json();
-        const normalizedZona = normalizeZoneName(project.zona);
-       
-        try {
-          // Get region info
-          const regionInfo = await getRegionInfoByZona(normalizedZona);
-         
-          // Construct the URL
-          const url = `/Regiones/${encodeURIComponent(regionInfo.regionName)}/${encodeURIComponent(regionInfo.subRegionName)}/${encodeURIComponent(normalizedZona)}/Proyecto-Comunitario/${encodeURIComponent(project.slug)}`;
-         
-          router.push(url);
-        } catch (error) {
-          console.error('Error getting region info:', error);
-          // Fallback to a simpler URL if region info is not found
-          router.push(`/Regiones/${encodeURIComponent(normalizedZona)}/Proyecto-Comunitario/${encodeURIComponent(project.slug)}`);
-        }
-      } else {
-        console.error('Failed to create project');
-      }
-    } catch (error) {
-      console.error('Error creating project:', error);
-    }
-  };
+  if (error) return <div>Error: {error}</div>;
 
-  return <ProjectForm onSubmit={handleCreateProject} />;
+  return (
+    <div className="max-w-4xl mx-auto py-8">
+      <h1 className="text-2xl font-bold mb-6">Crear Nuevo Proyecto</h1>
+      <ProjectForm
+        onSubmit={handleCreateProject}
+        user={extendedUser}
+      />
+    </div>
+  );
 }

@@ -1,4 +1,6 @@
 import React from 'react';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -10,16 +12,45 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { useProjectForm } from '@/hooks/useProjectForm';
+import { ProyectoComunitario, ExtendedUser } from '@/types/blog';
 
 interface ProjectFormProps {
-  onSubmit: (data: FormData) => Promise<void>;
+  onSubmit: (data: FormData) => Promise<ProyectoComunitario>;
+  user: ExtendedUser;
 }
 
-export function ProjectForm({ onSubmit }: ProjectFormProps) {
-  const { form, handleSubmit, users, isLoading, error } = useProjectForm(onSubmit);
+export function ProjectForm({ onSubmit, user }: ProjectFormProps) {
+  const router = useRouter();
+
+  const { form, handleSubmit, isLoading, error, isEditing } = useProjectForm(
+    onSubmit,
+    user,
+    (url) => router.push(url)
+  );
+
+  const renderImagePreview = (imageName: string, imageUrl: string | undefined) => {
+    if (!isEditing || !imageUrl) return null;
+    
+    return (
+      <div className="mt-2">
+        <div className="relative w-32 h-32">
+          <Image
+            src={imageUrl}
+            alt={`Current ${imageName}`}
+            layout="fill"
+            objectFit="cover"
+          />
+        </div>
+      </div>
+    );
+  };
+
+  const handleFileChange = (onChange: (value: File | null) => void) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    onChange(file);
+  };
 
   return (
     <Form {...form}>
@@ -29,9 +60,9 @@ export function ProjectForm({ onSubmit }: ProjectFormProps) {
           name="title"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Title</FormLabel>
+              <FormLabel>Título</FormLabel>
               <FormControl>
-                <Input placeholder="Enter project title" {...field} />
+                <Input placeholder="Ingrese el título del proyecto" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -44,10 +75,10 @@ export function ProjectForm({ onSubmit }: ProjectFormProps) {
             <FormItem>
               <FormLabel>Slug</FormLabel>
               <FormControl>
-                <Input placeholder="Slug" {...field} readOnly />
+                <Input placeholder="Slug" {...field} readOnly={isEditing} />
               </FormControl>
               <FormDescription>
-                This field is auto-generated from the title.
+                {isEditing ? "Este campo no se puede editar una vez creado el proyecto." : "Este campo se genera automáticamente a partir del título."}
               </FormDescription>
             </FormItem>
           )}
@@ -57,101 +88,119 @@ export function ProjectForm({ onSubmit }: ProjectFormProps) {
           name="zone"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Zone</FormLabel>
+              <FormLabel>Zona</FormLabel>
               <FormControl>
-                <Input placeholder="Enter zone (e.g. Region-de-Uraba-Antioqueno)" {...field} />
+                <Input placeholder="Ingrese la zona (ej. Region-de-Uraba-Antioqueno)" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
-          name="authorName"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Author</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select an author" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {isLoading ? (
-                    <SelectItem value="loading">Loading users...</SelectItem>
-                  ) : error ? (
-                    <SelectItem value="error">Error: {error}</SelectItem>
-                  ) : users.length === 0 ? (
-                    <SelectItem value="no-users">No users available</SelectItem>
-                  ) : (
-                    users.map((user) => (
-                      <SelectItem key={user.id} value={user.name}>
-                        {user.name} ({user.email})
-                      </SelectItem>
-                    ))
-                  )}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <FormItem>
+          <FormLabel>Autor</FormLabel>
+          <FormControl>
+            <Input value={user.name || ''} disabled />
+          </FormControl>
+          <FormDescription>Este campo se llena automáticamente con el usuario actual.</FormDescription>
+        </FormItem>
         <FormField
           control={form.control}
           name="mainImage"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Main Image</FormLabel>
+              <FormLabel>Imagen Principal</FormLabel>
+              {renderImagePreview('mainImage', typeof field.value === 'string' ? field.value : user.project?.mainImage)}
               <FormControl>
-                <Input 
-                  type="file" 
-                  accept="image/*" 
-                  onChange={(e) => field.onChange(e.target.files?.[0])}
+                <Input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange(field.onChange)}
                 />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        {[1, 2, 3].map((num) => (
-          <React.Fragment key={num}>
-            <FormField
-              control={form.control}
-              name={`content${num}` as "content1" | "content2" | "content3"}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Content {num}</FormLabel>
-                  <FormControl>
-                    <Textarea placeholder={`Enter content ${num}`} {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            {num < 3 && (
-              <FormField
-                control={form.control}
-                name={`image${num}` as "image1" | "image2"}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Image {num}</FormLabel>
-                    <FormControl>
-                      <Input 
-                        type="file" 
-                        accept="image/*" 
-                        onChange={(e) => field.onChange(e.target.files?.[0])}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            )}
-          </React.Fragment>
-        ))}
-        <Button type="submit">Create Project</Button>
+        <FormField
+          control={form.control}
+          name="content1"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Contenido 1</FormLabel>
+              <FormControl>
+                <Textarea placeholder="Ingrese el contenido principal" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="image1"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Imagen 1</FormLabel>
+              {renderImagePreview('image1', typeof field.value === 'string' ? field.value : user.project?.image1)}
+              <FormControl>
+                <Input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange(field.onChange)}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="content2"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Contenido 2</FormLabel>
+              <FormControl>
+                <Textarea placeholder="Ingrese contenido adicional (opcional)" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="image2"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Imagen 2</FormLabel>
+              {renderImagePreview('image2', typeof field.value === 'string' ? field.value : user.project?.image2)}
+              <FormControl>
+                <Input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange(field.onChange)}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="content3"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Contenido 3</FormLabel>
+              <FormControl>
+                <Textarea placeholder="Ingrese contenido adicional (opcional)" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button type="submit" disabled={isLoading}>
+          {isEditing ? 'Actualizar Proyecto' : 'Crear Proyecto'}
+        </Button>
       </form>
+      {error && <div className="text-red-500 mt-4">{error}</div>}
     </Form>
   );
 }

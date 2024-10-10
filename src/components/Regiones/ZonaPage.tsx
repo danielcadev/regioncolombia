@@ -23,13 +23,13 @@ import {
 } from "lucide-react";
 import { ProyectoComunitarioPreview } from '@/components/Regiones/ProyectoComunitarioPreview';
 
-interface ZonaPageProps {
-  zona: Zona;
+interface ZonePageProps {
+  zone: Zona;  // Usamos Zona aquí, pero lo llamamos 'zone' en las props
   region: Region;
   subRegion: SubRegion;
 }
 
-export default function ZonaPage({ zona, region, subRegion }: ZonaPageProps) {
+export default function ZonePage({ zone, region, subRegion }: ZonePageProps) {
   const [proyectos, setProyectos] = useState<ProyectoZona[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -38,8 +38,8 @@ export default function ZonaPage({ zona, region, subRegion }: ZonaPageProps) {
     async function loadProyectos() {
       try {
         setLoading(true);
-        // Use the formatted zona name for fetching projects
-        const response = await fetch(`/api/projects/create?zona=${normalizeZoneName(zona.name)}`);
+        // Use the formatted zone name for fetching projects
+        const response = await fetch(`/api/projects/create?zone=${normalizeZoneName(zone.name)}`);
 
         
         if (!response.ok) {
@@ -58,7 +58,7 @@ export default function ZonaPage({ zona, region, subRegion }: ZonaPageProps) {
     }
 
     loadProyectos();
-  }, [zona.name]);  // Changed dependency to zona.name
+  }, [zone.name]);  // Changed dependency to zone.name
   
   return (
     <div className="bg-white min-h-screen">
@@ -70,15 +70,15 @@ export default function ZonaPage({ zona, region, subRegion }: ZonaPageProps) {
           className="text-center"
         >
           <h1 className="text-5xl font-bold text-softblack-500 mb-2">
-            {zona.name}
+            {zone.name}
           </h1>
           <p className="text-xl text-green-500">{`${region.name} - ${subRegion.name}`}</p>
         </motion.div>
 
         <div className="relative w-full h-[60vh] rounded-2xl overflow-hidden shadow-2xl">
           <Image
-            src={zona.imageUrl}
-            alt={zona.name}
+            src={zone.imageUrl}
+            alt={zone.name}
             fill
             sizes="100vw"
             priority
@@ -86,8 +86,8 @@ export default function ZonaPage({ zona, region, subRegion }: ZonaPageProps) {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-softblack-500 to-transparent flex items-end justify-start p-8">
             <div className="text-white">
-              <h2 className="text-3xl font-semibold mb-2">{zona.name}</h2>
-              <p className="text-xl opacity-80">{zona.description}</p>
+              <h2 className="text-3xl font-semibold mb-2">{zone.name}</h2>
+              <p className="text-xl opacity-80">{zone.description}</p>
             </div>
           </div>
         </div>
@@ -110,7 +110,7 @@ export default function ZonaPage({ zona, region, subRegion }: ZonaPageProps) {
               </CardHeader>
               <CardContent className="pt-6">
                 <ul className="space-y-3">
-                  {zona.municipios.map((municipio, index) => (
+                  {zone.municipios.map((municipio, index) => (
                     <motion.li
                       key={index}
                       initial={{ opacity: 0 }}
@@ -153,22 +153,22 @@ export default function ZonaPage({ zona, region, subRegion }: ZonaPageProps) {
                 <p className="flex items-center">
                   <Users className="mr-2 text-green-500" />{" "}
                   <strong>Población:</strong>{" "}
-                  <span className="ml-2">{zona.population}</span>
+                  <span className="ml-2">{zone.population}</span>
                 </p>
                 <p className="flex items-center">
                   <MapPin className="mr-2 text-green-500" />{" "}
                   <strong>Superficie:</strong>{" "}
-                  <span className="ml-2">{zona.surface}</span>
+                  <span className="ml-2">{zone.surface}</span>
                 </p>
                 <p className="flex items-center">
                   <Users className="mr-2 text-green-500" />{" "}
                   <strong>Densidad:</strong>{" "}
-                  <span className="ml-2">{zona.density}</span>
+                  <span className="ml-2">{zone.density}</span>
                 </p>
                 <p className="flex items-center">
                   <Home className="mr-2 text-green-500" />{" "}
                   <strong>Capital:</strong>{" "}
-                  <span className="ml-2">{zona.capital}</span>
+                  <span className="ml-2">{zone.capital}</span>
                 </p>
               </CardContent>
             </Card>
@@ -186,7 +186,7 @@ export default function ZonaPage({ zona, region, subRegion }: ZonaPageProps) {
           <h3 className="text-2xl font-semibold mb-4 text-softblack-500 flex items-center">
             <MapPin className="mr-2 text-green-500" /> Ubicación
           </h3>
-          <p className="text-softblack-500 mb-4">{zona.location}</p>
+          <p className="text-softblack-500 mb-4">{zone.location}</p>
           <Modal>
             <ModalTrigger
               className={cn(
@@ -198,12 +198,12 @@ export default function ZonaPage({ zona, region, subRegion }: ZonaPageProps) {
             <ModalBody>
               <ModalContent className="bg-white rounded-2xl p-6">
                 <h4 className="text-2xl text-softblack-500 font-bold text-center mb-4">
-                  Mapa de {zona.name}
+                  Mapa de {zone.name}
                 </h4>
                 <div className="h-[60vh] bg-green-50 rounded-xl flex items-center justify-center">
                   {/* Aquí iría el componente del mapa real */}
                   <p className="text-softblack-500">
-                    Mapa interactivo de {zona.name}
+                    Mapa interactivo de {zone.name}
                   </p>
                 </div>
               </ModalContent>
@@ -226,7 +226,7 @@ export default function ZonaPage({ zona, region, subRegion }: ZonaPageProps) {
           transition={{ delay: 0.7 }}
         >
            <h3 className="text-3xl font-semibold mb-6 text-softblack-500 text-center">
-          Proyectos Comunitarios en {zona.name}
+          Proyectos Comunitarios en {zone.name}
         </h3>
         {loading ? (
           <p className="text-center text-gray-500 mt-4">Cargando proyectos...</p>
@@ -245,14 +245,14 @@ export default function ZonaPage({ zona, region, subRegion }: ZonaPageProps) {
                   {...proyecto}
                   regionName={region.name}
                   subRegionName={subRegion.name}
-                  zona={zona.name}
+                  zone={zone.name}
                 />
               </motion.div>
             ))}
           </div>
         ) : (
           <p className="text-center text-gray-500 mt-4">
-            No hay proyectos comunitarios disponibles en esta zona.
+            No hay proyectos comunitarios disponibles en esta zone.
           </p>
         )}
         </motion.div>

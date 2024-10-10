@@ -15,7 +15,7 @@ async function getProyectoData(slug: string, zonaName: string): Promise<Proyecto
 
     // Normaliza los nombres para la comparación
     const normalizedZonaName = normalizeZoneName(zonaName);
-    const normalizedProyectoZona = normalizeZoneName(proyecto.zona);
+    const normalizedProyectoZona = normalizeZoneName(proyecto.zone);
 
     // Compara la zona
     if (normalizedProyectoZona !== normalizedZonaName) {

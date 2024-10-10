@@ -1,5 +1,4 @@
 "use client"
-
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
@@ -20,17 +19,16 @@ export default function SignInPage() {
         const response = await fetch('/api/auth/session');
         const session = await response.json();
         if (session && session.user) {
-          console.log("User authenticated, redirecting to dashboard")
+          console.log("Usuario autenticado, redirigiendo al panel")
           router.push("/admin/dashboard")
         } else {
           setIsLoading(false)
         }
       } catch (error) {
-        console.error("Error checking authentication:", error)
+        console.error("Error al verificar la autenticación:", error)
         setIsLoading(false)
       }
     }
-
     checkAuth()
   }, [router])
 
@@ -40,20 +38,22 @@ export default function SignInPage() {
 
   if (isLoading) {
     return (
-      <div className="container flex h-screen w-screen flex-col items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin" />
-        <p className="mt-4 text-muted-foreground">Checking authentication status...</p>
+      <div className="flex h-screen items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto" />
+          <p className="mt-4 text-muted-foreground">Verificando estado de autenticación...</p>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="container flex h-screen w-screen flex-col items-center justify-center">
-      <Card className="w-[350px]">
+    <div className="flex h-screen items-center justify-center bg-gray-50">
+      <Card className="w-[350px] max-w-[90vw]">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl text-center">Sign in</CardTitle>
+          <CardTitle className="text-2xl text-center">Iniciar sesión</CardTitle>
           <CardDescription className="text-center">
-            Choose your preferred sign in method
+            Elige tu método de inicio de sesión preferido
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4">
@@ -69,7 +69,7 @@ export default function SignInPage() {
             </div>
             <div className="relative flex justify-center text-xs uppercase">
               <span className="bg-background px-2 text-muted-foreground">
-                Or continue with
+                O continúa con
               </span>
             </div>
           </div>
@@ -79,8 +79,8 @@ export default function SignInPage() {
           </div>
         </CardContent>
         <CardFooter className="flex justify-center">
-          <p className="text-sm text-muted-foreground">
-            By signing in, you agree to our Terms of Service and Privacy Policy
+          <p className="text-xs text-center text-muted-foreground">
+            Al iniciar sesión, aceptas nuestros Términos de Servicio y Política de Privacidad
           </p>
         </CardFooter>
       </Card>

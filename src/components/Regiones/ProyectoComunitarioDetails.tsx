@@ -14,9 +14,9 @@ export default function ProyectoComunitarioDetails({ proyecto }: ProyectoComunit
       <Card className="mb-8 overflow-hidden">
         <CardHeader className="relative">
           {proyecto.mainImage && (
-            <img 
-              src={proyecto.mainImage} 
-              alt={proyecto.title} 
+            <img
+              src={proyecto.mainImage}
+              alt={proyecto.title}
               className="absolute inset-0 w-full h-full object-cover"
             />
           )}
@@ -25,7 +25,7 @@ export default function ProyectoComunitarioDetails({ proyecto }: ProyectoComunit
             <div className="flex items-center space-x-4 text-sm text-gray-200">
               <div className="flex items-center">
                 <MapPinIcon className="mr-2 h-4 w-4" />
-                <span>{proyecto.zona || 'No especificada'}</span>
+                <span>{proyecto.zone || 'No especificada'}</span>
               </div>
               <div className="flex items-center">
                 <CalendarIcon className="mr-2 h-4 w-4" />
@@ -35,32 +35,19 @@ export default function ProyectoComunitarioDetails({ proyecto }: ProyectoComunit
           </div>
         </CardHeader>
         <CardContent className="prose max-w-none mt-6">
-          <div className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">Contenido Principal</h2>
-            <p>{proyecto.content1}</p>
-          </div>
+          {proyecto.content1 && <p className="mb-8">{proyecto.content1}</p>}
           
           {proyecto.image1 && (
             <img src={proyecto.image1} alt="Imagen 1" className="w-full h-auto mb-8 rounded-lg" />
           )}
           
-          {proyecto.content2 && (
-            <div className="mb-8">
-              <h2 className="text-2xl font-semibold mb-4">Contenido Adicional</h2>
-              <p>{proyecto.content2}</p>
-            </div>
-          )}
+          {proyecto.content2 && <p className="mb-8">{proyecto.content2}</p>}
           
           {proyecto.image2 && (
             <img src={proyecto.image2} alt="Imagen 2" className="w-full h-auto mb-8 rounded-lg" />
           )}
           
-          {proyecto.content3 && (
-            <div className="mb-8">
-              <h2 className="text-2xl font-semibold mb-4">Más Información</h2>
-              <p>{proyecto.content3}</p>
-            </div>
-          )}
+          {proyecto.content3 && <p className="mb-8">{proyecto.content3}</p>}
         </CardContent>
       </Card>
       
@@ -68,11 +55,11 @@ export default function ProyectoComunitarioDetails({ proyecto }: ProyectoComunit
         <CardContent className="flex items-center space-x-4 pt-6">
           <Avatar>
             <AvatarImage src="/placeholder-avatar.jpg" alt="Autor" />
-            <AvatarFallback>{proyecto.authorName?.charAt(0) || 'A'}</AvatarFallback>
+            <AvatarFallback>{proyecto.author.name.charAt(0) || 'A'}</AvatarFallback>
           </Avatar>
           <div>
             <p className="font-semibold">Autor</p>
-            <p className="text-sm text-gray-500">{proyecto.authorName || 'Desconocido'}</p>
+            <p className="text-sm text-gray-500">{proyecto.author.name}</p>
           </div>
         </CardContent>
       </Card>

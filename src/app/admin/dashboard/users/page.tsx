@@ -1,13 +1,12 @@
+// app/admin/users/page.tsx
 import { auth } from "@/lib/auth"
 import { redirect } from 'next/navigation'
-import UsersClient from "./UsersClient"
+import UserManagement from "@/components/admin/users/UserManagement"
 import { Session } from "next-auth"
 
 export default async function UsersPage() {
   const session = await auth() as Session | null
   
-  console.log("Server-side session:", session) // Log adicional
-
   if (!session) {
     redirect('/admin/signin')
   }
@@ -17,5 +16,5 @@ export default async function UsersPage() {
     redirect('/admin/dashboard')
   }
  
-  return <UsersClient initialSession={session} />
+  return <UserManagement initialSession={session} />
 }
