@@ -18,26 +18,33 @@ export function ViewProjectsTable() {
   const router = useRouter();
 
   useEffect(() => {
+    console.log('ViewProjectsTable montado');
     fetchProjects();
   }, []);
 
+
   const fetchProjects = async () => {
+    console.log('Iniciando fetchProjects');
     try {
       setLoading(true);
       const response = await fetch('/api/projects/list');
+      console.log('Respuesta de API recibida:', response.status);
+      
       if (!response.ok) {
-        throw new Error('Error al obtener los proyectos');
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
+      
       const data = await response.json();
+      console.log('Datos de proyectos recibidos:', data);
       setProjects(data);
       setError(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Ocurrió un error desconocido');
+      console.error('Error al obtener proyectos:', err);
+      setError(err instanceof Error ? err.message : 'Error desconocido');
     } finally {
       setLoading(false);
     }
   };
-
   const handleDelete = async (id: string) => {
     if (window.confirm('¿Está seguro de que desea eliminar este proyecto?')) {
       try {
@@ -58,6 +65,7 @@ export function ViewProjectsTable() {
 
   if (loading) return <div>Cargando proyectos...</div>;
   if (error) return <div>Error: {error}</div>;
+  if (projects.length === 0) return <div>No hay proyectos para mostrar.</div>;
 
   return (
     <Table>
