@@ -1,3 +1,4 @@
+// components/ProjectForm.tsx
 import React from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -12,8 +13,8 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { useProjectForm } from '@/hooks/useProjectForm';
+import { RichTextEditor } from '@/components/admin/content/RichTextEditor';
 import { ProyectoComunitario, ExtendedUser } from '@/types/blog';
 
 interface ProjectFormProps {
@@ -52,9 +53,25 @@ export function ProjectForm({ onSubmit, user }: ProjectFormProps) {
     onChange(file);
   };
 
+  const renderRichTextEditor = (name: 'content1' | 'content2' | 'content3') => (
+    <FormField
+      control={form.control}
+      name={name}
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>{`Contenido ${name.slice(-1)}`}</FormLabel>
+          <FormControl>
+            <RichTextEditor content={field.value} onChange={field.onChange} />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  );
+
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
+      <form onSubmit={handleSubmit} className="space-y-8">
         <FormField
           control={form.control}
           name="title"
@@ -121,19 +138,9 @@ export function ProjectForm({ onSubmit, user }: ProjectFormProps) {
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
-          name="content1"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Contenido 1</FormLabel>
-              <FormControl>
-                <Textarea placeholder="Ingrese el contenido principal" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        
+        {renderRichTextEditor('content1')}
+        
         <FormField
           control={form.control}
           name="image1"
@@ -152,19 +159,9 @@ export function ProjectForm({ onSubmit, user }: ProjectFormProps) {
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
-          name="content2"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Contenido 2</FormLabel>
-              <FormControl>
-                <Textarea placeholder="Ingrese contenido adicional (opcional)" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        
+        {renderRichTextEditor('content2')}
+        
         <FormField
           control={form.control}
           name="image2"
@@ -183,19 +180,9 @@ export function ProjectForm({ onSubmit, user }: ProjectFormProps) {
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
-          name="content3"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Contenido 3</FormLabel>
-              <FormControl>
-                <Textarea placeholder="Ingrese contenido adicional (opcional)" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        
+        {renderRichTextEditor('content3')}
+        
         <Button type="submit" disabled={isLoading}>
           {isEditing ? 'Actualizar Proyecto' : 'Crear Proyecto'}
         </Button>

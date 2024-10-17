@@ -35,22 +35,22 @@ export default function ProyectoComunitarioDetails({ proyecto }: ProyectoComunit
           </div>
         </CardHeader>
         <CardContent className="prose max-w-none mt-6">
-          {proyecto.content1 && <p className="mb-8">{proyecto.content1}</p>}
-          
+          {proyecto.content1 && <div dangerouslySetInnerHTML={{ __html: proyecto.content1 }} className="mb-8" />}
+         
           {proyecto.image1 && (
             <img src={proyecto.image1} alt="Imagen 1" className="w-full h-auto mb-8 rounded-lg" />
           )}
-          
-          {proyecto.content2 && <p className="mb-8">{proyecto.content2}</p>}
-          
+         
+          {proyecto.content2 && <div dangerouslySetInnerHTML={{ __html: proyecto.content2 }} className="mb-8" />}
+         
           {proyecto.image2 && (
             <img src={proyecto.image2} alt="Imagen 2" className="w-full h-auto mb-8 rounded-lg" />
           )}
-          
-          {proyecto.content3 && <p className="mb-8">{proyecto.content3}</p>}
+         
+          {proyecto.content3 && <div dangerouslySetInnerHTML={{ __html: proyecto.content3 }} className="mb-8" />}
         </CardContent>
       </Card>
-      
+     
       <Card>
         <CardContent className="flex items-center space-x-4 pt-6">
           <Avatar>

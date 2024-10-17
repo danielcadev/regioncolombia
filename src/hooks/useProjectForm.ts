@@ -1,5 +1,4 @@
 // hooks/useProjectForm.ts
-
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -17,7 +16,6 @@ export const useProjectForm = (
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
-
   const existingProject = user.project;
   const isEditing = !!existingProject;
 
@@ -77,19 +75,18 @@ export const useProjectForm = (
       const normalizedZone = normalizeZoneName(data.zone);
       formData.set('zone', normalizedZone);
       formData.set('authorId', data.authorId);
-      
+     
       const response = await onSubmit(formData);
-      
+     
       if (response && response.zone && response.slug) {
         const redirectUrl = await getProjectRedirectUrl(response.zone, response.slug);
-        
+       
         toast({
           title: isEditing ? 'Proyecto actualizado' : 'Proyecto creado',
           description: isEditing
             ? 'El proyecto se ha actualizado exitosamente.'
             : 'El proyecto se ha creado exitosamente.',
         });
-
         redirectFunction(redirectUrl);
       } else {
         throw new Error('No se pudo obtener la información necesaria para la redirección');
@@ -113,7 +110,7 @@ export const useProjectForm = (
 
   return {
     form,
-    handleSubmit,
+    handleSubmit: form.handleSubmit(handleSubmit),
     isLoading,
     error,
     isEditing
