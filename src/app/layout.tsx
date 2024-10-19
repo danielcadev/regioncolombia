@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "@/components/Layout/Navbar";
 import { Toaster } from "@/components/ui/toaster"
 import Footer from "@/components/Layout/Footer";
+import NavbarMobile from "@/components/Layout/NavbarMobile";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -23,7 +24,12 @@ export default function RootLayout({
   return (
     <html lang="es" className={`${inter.variable} h-full`}>
       <body className="font-sans bg-background text-foreground flex flex-col min-h-screen">
-        <Navbar />
+        <div className="hidden lg:block">
+          <Navbar />
+        </div>
+        <div className="lg:hidden">
+          <NavbarMobile />
+        </div>
         <main className="flex-grow">
           {children}
         </main>
