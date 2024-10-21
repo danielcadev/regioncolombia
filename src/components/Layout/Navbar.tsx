@@ -122,6 +122,12 @@ const Navbar = () => {
                 </AnimatePresence>
               </div>
             ))}
+            <Link
+              href="/Sobre-Nosotros"
+              className="h-32 px-5 text-lg font-bold text-gray-700 hover:text-green-600 hover:bg-gray-100 transition-colors duration-200 flex items-center"
+            >
+              Sobre Nosotros
+            </Link>
           </div>
         </div>
       </div>

@@ -17,7 +17,7 @@ export default function Scene3d() {
   }, []);
 
   const desktopScene = "https://prod.spline.design/Sn9YUpi4cTsSC8C9/scene.splinecode";
-  const mobileScene = "https://prod.spline.design/5iWs7F1RMjRhIGkh/scene.splinecode";
+  const mobileScene = "https://prod.spline.design/tQyKFYxf9sBTIG-G/scene.splinecode";
 
   return (
     <div className="relative w-full h-screen">
@@ -30,3 +30,5 @@ export default function Scene3d() {
     </div>
   );
 }
+
+
